@@ -2,7 +2,8 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/r888800009/telecat/master/img.svg?sanitize=true">
 </p>
-What is telecat, the telecat can  
+What is telecat, the telecat can connect cli program to telegram bot.
+so you can setup your cli program to telegram through telecat.
 
 The **telecat** is a combination of **telegram** and
 **netcat** two words.
@@ -44,7 +45,7 @@ int main()
     char buf[32];
     scanf("%31s", buf);
     printf("%s\n", buf);
-    fflush(stdout); # important
+    fflush(stdout); // important
   }
 
   return 0;
@@ -77,3 +78,6 @@ Then enter the following command at the terminal
 # tty2
 nc localhost 1234
 ```
+
+## Problems
+please make sure `stdout` flush.
