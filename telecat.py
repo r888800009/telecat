@@ -3,7 +3,7 @@
 """
 simple bot with pwned service
 """
-
+import logging
 import subprocess
 from queue import Queue, Empty
 from threading import Thread
@@ -15,6 +15,8 @@ from telegram.ext import Updater, MessageHandler, Filters
 COMMAND = []
 CONFIG = {}
 PROC_POOL = {}
+
+LOGGER = logging.getLogger(__name__)
 
 def tg_command(bot, update):
     "handler telegram commands"
@@ -117,6 +119,10 @@ def stop_proc(chat_id):
 
     PROC_POOL.pop(chat_id, None)
 
+def error(update, context):
+    """log Errors"""
+    LOGGER.warning('Update "%s" caused error "%s"', update, context.error)
+
 def main():
     """Start the bot."""
     updater = Updater(CONFIG['token'])
@@ -125,6 +131,11 @@ def main():
     dp = updater.dispatcher
     dp.add_handler(MessageHandler(Filters.text, run_command))
     dp.add_handler(MessageHandler(Filters.command, tg_command))
+
+    # log all errors
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        level=logging.INFO)
+    dp.add_error_handler(error)
 
     # Start the Bot
     updater.start_polling()
