@@ -8,11 +8,12 @@ import subprocess
 from queue import Queue, Empty
 from threading import Thread
 import time
-from telegram.ext import Updater, MessageHandler, Filters
+import json
 import sys
+from telegram.ext import Updater, MessageHandler, Filters
 
-TOKEN = ''
 COMMAND = []
+CONFIG = {}
 PROC_POOL = {}
 
 def tg_command(bot, update):
@@ -118,7 +119,7 @@ def stop_proc(chat_id):
 
 def main():
     """Start the bot."""
-    updater = Updater(TOKEN)
+    updater = Updater(CONFIG['token'])
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -133,7 +134,50 @@ def main():
     for k in list(PROC_POOL):
         stop_proc(k)
 
+def update_config(key, val):
+    """update config file"""
+    global CONFIG
+
+    print('update "%s"' % key)
+    CONFIG[key] = val
+
+def save_config():
+    """save config"""
+    print('save config')
+    with open('config.json', 'w') as f:
+        json.dump(CONFIG, f, indent=2)
+
+def create_config_file():
+    """create_config_file"""
+    global CONFIG
+
+    print("First start")
+    print("copy example config")
+
+    CONFIG = json.loads(open("config.example.json").read())
+
+    tg_token = input("telegram token: ")
+    print('"%s"' % tg_token)
+
+    update_config('token', tg_token)
+
+    save_config()
+
+def load_config():
+    """load config file"""
+    global CONFIG
+
+    config_data = ''
+    try:
+        config_data = open('config.json').read()
+    except FileNotFoundError:
+        create_config_file()
+        config_data = open('config.json').read()
+
+    CONFIG = json.loads(config_data)
+
 def check():
+    """check argument"""
     global COMMAND
     argv = sys.argv
     args = len(argv)
@@ -146,4 +190,5 @@ def check():
 
 if __name__ == '__main__':
     check()
+    load_config()
     main()
