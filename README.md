@@ -1,15 +1,28 @@
 # Telecat
+<p align="center">
+  <img src="https://raw.githubusercontent.com/r888800009/telecat/master/img.svg?sanitize=true">
+</p>
 What is telecat, the telecat can  
 
 The **telecat** is a combination of **telegram** and
 **netcat** two words.
 
 ## Setup
+install dependencies
 ``` bash
 pip install python-telegram-bot
 
 git clone https://github.com/r888800009/telecat.git
 cd telecat
+```
+
+first start 
+``` bash
+# run program
+./telecat.py program
+
+# run script
+./telecat.py ./script.sh 
 ```
 
 ## Telegram Shell Bot 
