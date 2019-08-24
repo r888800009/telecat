@@ -20,7 +20,37 @@ Set up a shell bot is easy.
 
 Maybe you want to set the shell bot only you can use the config.
 
-## Use terminal chat with telegram
+## Start With Simple C Program
+create a c file `simple.c`.
+``` c
+#include <stdio.h>
+
+int main()
+{
+  while (1) {
+    char buf[32];
+    scanf("%31s", buf);
+    printf("%s\n", buf);
+    fflush(stdout); # important
+  }
+
+  return 0;
+}
+```
+
+then compile
+``` bash
+gcc simple.c
+```
+
+Run `telecat`
+``` bash
+./telecat.py ./a.out
+```
+
+Input `/start` in telegram then type some word you got an echo.
+
+## Use Terminal Chat With Telegram
 Using Netcat open a port telegram
 ``` bash
 # tty1
