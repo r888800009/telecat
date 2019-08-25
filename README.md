@@ -33,6 +33,8 @@ Set up a shell bot is easy.
 ```
 
 Maybe you want to set the shell bot only you can use the config.
+Send `/register` to telegram bot. Then confirm username in console. 
+Type `y` to confirm setting
 
 ## Start With Simple C Program
 create a c file `simple.c`.
