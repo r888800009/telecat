@@ -18,11 +18,34 @@ PROC_POOL = {}
 
 LOGGER = logging.getLogger(__name__)
 
+def  restrict_user(bot, chat_id, user):
+    if CONFIG['restrict-user']:
+        bot.send_message(chat_id=chat_id, text="Already configured")
+        return
+
+    username = '' if user.username is None else '(%s)'% user.username
+    print('Restrict bots only for this user?')
+    print('[%s]: "%s" %s' % (str(user.id), user.first_name, username))
+
+    choice = input('[y/n]: ').lower()
+
+    if choice == 'y':
+        update_config('restrict-user', True)
+        update_config('restrict-user-id', user.id)
+        save_config()
+    else:
+        print('Cancel setting')
+
 def tg_command(bot, update):
     "handler telegram commands"
     command = update.message.text
     chat_id = update.message.chat_id
+    user = update.message.from_user
+
     print(command)
+
+    if CONFIG['restrict-user'] and CONFIG['restrict-user-id'] != user.id:
+        return
 
     if command == '/restart':
         print('restart proc')
@@ -33,14 +56,20 @@ def tg_command(bot, update):
         bot.send_message(chat_id=chat_id, text="start")
     elif command == '/stop':
         stop_proc(chat_id)
+    elif command == '/register':
+        restrict_user(bot, chat_id, user)
 
 def run_command(bot, update):
     """send command."""
     command = update.message.text
     chat_id = update.message.chat_id
+    user = update.message.from_user
 
     print("chat id:" + str(chat_id))
     print('"' + command + '"')
+
+    if CONFIG['restrict-user'] and CONFIG['restrict-user-id'] != user.id:
+        return
 
     if not (chat_id in PROC_POOL):
         bot.send_message(chat_id=chat_id, text="proc is not running /start")
@@ -56,6 +85,7 @@ def tg_output(out, str_queue):
     """get process stdout"""
     for line in iter(out.readline, b''):
         str_queue.put(line.decode('utf8'))
+
     out.close()
 
 def tg_send(chat_id, bot, str_queue, running):
@@ -195,6 +225,7 @@ def check():
     COMMAND = argv[1:]
     if args == 1:
         print('Warning, no argument is set.')
+        print('example: ./telecat.py ./a.out')
         sys.exit(1)
 
     print('running "%s", "%s"' % (argv[1], COMMAND))

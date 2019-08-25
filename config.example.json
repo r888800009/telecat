@@ -1,5 +1,5 @@
 {
   "token": "your-token",
-  "limit-user": false,
-  "user-id": null
+  "restrict-user": false,
+  "restrict-user-id": null
 }
