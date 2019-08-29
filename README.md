@@ -36,6 +36,22 @@ Maybe you want to set the shell bot only you can use the config.
 Send `/register` to telegram bot. Then confirm username in console. 
 Type `y` to confirm setting
 
+## Python shell
+Run python bot. 
+``` bash
+./telecat.py python -i 
+```
+
+Send python code to bot.
+``` python
+if True:
+    print('yes')
+else:
+    print('no')
+
+# new line
+```
+
 ## Start With Simple C Program
 create a c file `simple.c`.
 ``` c
