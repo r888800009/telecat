@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-simple bot with pwned service
+simple bot with cli service
 """
 import logging
 import subprocess
