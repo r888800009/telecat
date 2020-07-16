@@ -18,7 +18,7 @@ PROC_POOL = {}
 
 LOGGER = logging.getLogger(__name__)
 
-def  restrict_user(bot, chat_id, user):
+def restrict_user(bot, chat_id, user):
     if CONFIG['restrict-user']:
         bot.send_message(chat_id=chat_id, text="Already configured")
         return
@@ -36,7 +36,7 @@ def  restrict_user(bot, chat_id, user):
     else:
         print('Cancel setting')
 
-def tg_command(bot, update):
+def tg_command(update, context):
     "handler telegram commands"
     command = update.message.text
     chat_id = update.message.chat_id
@@ -45,21 +45,25 @@ def tg_command(bot, update):
     print(command)
 
     if CONFIG['restrict-user'] and CONFIG['restrict-user-id'] != user.id:
+        print('not allow')
         return
 
     if command == '/restart':
         print('restart proc')
-        start_proc(chat_id, bot)
-        bot.send_message(chat_id=chat_id, text="restart")
+        start_proc(chat_id, context.bot)
+        context.bot.send_message(chat_id=chat_id, text="restart")
     elif command == '/start':
-        start_proc(chat_id, bot)
-        bot.send_message(chat_id=chat_id, text="start")
+        print('start proc')
+        start_proc(chat_id, context.bot)
+        context.bot.send_message(chat_id=chat_id, text="start")
     elif command == '/stop':
         stop_proc(chat_id)
     elif command == '/register':
-        restrict_user(bot, chat_id, user)
+        restrict_user(context.bot, chat_id, user)
+    else:
+        print('undefine command')
 
-def run_command(bot, update):
+def run_command(update, context):
     """send command."""
     command = update.message.text
     chat_id = update.message.chat_id
@@ -72,7 +76,7 @@ def run_command(bot, update):
         return
 
     if not (chat_id in PROC_POOL):
-        bot.send_message(chat_id=chat_id, text="proc is not running /start")
+        context.bot.send_message(chat_id=chat_id, text="proc is not running /start")
         return
 
     session = PROC_POOL[chat_id]
@@ -100,9 +104,9 @@ def tg_send(chat_id, bot, str_queue, running):
             else:
                 result += line
 
-        if result != '':
+        if result.strip() != '':
+            print('"' + result + '"')
             bot.send_message(chat_id=chat_id, text=result)
-            print(result)
 
         time.sleep(0.25)
 
@@ -155,12 +159,12 @@ def error(update, context):
 
 def main():
     """Start the bot."""
-    updater = Updater(CONFIG['token'])
+    updater = Updater(CONFIG['token'], use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
-    dp.add_handler(MessageHandler(Filters.text, run_command))
     dp.add_handler(MessageHandler(Filters.command, tg_command))
+    dp.add_handler(MessageHandler(Filters.text, run_command))
 
     # log all errors
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
